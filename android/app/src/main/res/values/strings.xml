@@ -1,3 +1,4 @@
 <resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">1Apk9eItVoRLbi2Tf_FwgQwgqHKA143b502e-f8a9-4a56-bfae-0a06592bfd90</string>
     <string name="app_name">tchat_mobile</string>
 </resources>
