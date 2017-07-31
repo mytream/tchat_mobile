@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 
 import SOCKET from '../common/socketio'
-SOCKET.open();
+// SOCKET.open();
+// import SOCKET from '../common/socket'
 
 class test1Page extends React.Component {
   static navigationOptions = {

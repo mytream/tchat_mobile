@@ -20,7 +20,7 @@ import { getCurrentUser, setCurrentUser, updateUser } from '../store/user/action
 class MePage extends React.Component {
 
   static navigationOptions = {
-    title: '我的',
+    title: '我的'
   };
   
   constructor(props){
@@ -34,7 +34,7 @@ class MePage extends React.Component {
   }
 
   componentDidMount(){
-    return;
+    // return;
 
     this.props.dispatch(getCurrentUser());
     // User.getCurrentUser().then(userInfo =>{
@@ -43,16 +43,19 @@ class MePage extends React.Component {
   }
 
   handleSaveUser(){
-    console.log('newUser', this.state.userInfo);
+    console.log('newUser', this.props.userInfo);
     // User.updateUser(this.state.userInfo).then(() => {
     //   Toast.success('用户信息保存成功');
     // }, err => {
     //   console.error(err);
     // });
     this.props.dispatch(updateUser(this.props.userInfo)).then(() => {
-        Toast.success('用户信息保存成功');
+      alert('用户信息保存成功');
+      this.setState({ editable: false });
+
+      this.props.dispatch(updateUser(this.props.userInfo));
     }, err => {
-        console.error(err);
+        alert(err);
     });
   }
 
@@ -78,27 +81,33 @@ class MePage extends React.Component {
       return null;
     }
 
-    // const {userInfo} = this.props;
+    const {userInfo} = this.props;
 
-    // todo:
-    const userInfo = {"_id":"5974b5e9a63a41c534f13473","userId":1500820969277,"name":"那年此时3333","url":"http://media.boingboing.net/wp-content/uploads/2016/06/bbb22_576967691500002f001ba92f.jpeg.jpg","deleted":true,"order":0,"online":true,"__v":0};
+    let { name, url } = userInfo;
 
-    const { name, url } = userInfo;
-
+    console.log('url', url);
 
     return (
       <View>
-        <TextInput value={name || ''} onChangeText={e => {
-          userInfo.name = e.target.value;
-          // this.setState({userInfo});
-          this.forceUpdate();
-        }} />
+        <TextInput
+          value={name || ''}
+          onChangeText={value => {
+            console.log('name', value);
+            userInfo.name = value;
+            // this.setState({userInfo});
+            this.forceUpdate();
+          }}
+        />
+        <TextInput
+          value={url || ''}
+          onChangeText={value => {
+            console.log('url', value);
+            userInfo.url = value;
+            // this.setState({userInfo});
+            this.forceUpdate();
+          }}
+        />
 
-        <TextInput value={url || ''} onChange={e => {
-          userInfo.url = e.target.value;
-          // this.setState({userInfo});
-          this.forceUpdate();
-        }} />
         <Button
           className="btn btn-primary"
           onPress={this.handleSaveUser}
@@ -114,11 +123,7 @@ class MePage extends React.Component {
       return null;
     }
 
-    // const {userInfo} = this.props;
-
-    // todo:
-    const userInfo = {"_id":"5974b5e9a63a41c534f13473","userId":1500820969277,"name":"那年此时3333","url":"http://media.boingboing.net/wp-content/uploads/2016/06/bbb22_576967691500002f001ba92f.jpeg.jpg","deleted":true,"order":0,"online":true,"__v":0};
-
+    const { userInfo } = this.props;
     const { name, url } = userInfo;
 
     return (
@@ -147,6 +152,5 @@ function mapStateToProps(state) {
   };
 }
 
-// export default connect(mapStateToProps)(MePage);
-
-export default MePage;
+export default connect(mapStateToProps)(MePage);
+// export default MePage;

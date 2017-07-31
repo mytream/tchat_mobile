@@ -8,9 +8,10 @@ function http(url, options) {
   // console.log(`url: ${url}`, options);
   return fetch(url, options).then(function (response) {
     // 服务端没有正常响应
-    if (response.status != constants.HTTP_STATUS.SUCCESS) {
+    if (response.status !== constants.HTTP_STATUS.SUCCESS) {
       http.trigger(response.status);
-      return response.json().then(res=>{
+      return response.json().then(res => {
+        console.log('Hello哦偶偶偶', res);
         throw res;
       },err=>{
         throw err;
@@ -18,7 +19,7 @@ function http(url, options) {
     }
     return response.json().then(function (res) {
       // 判断业务逻辑
-      if (res.code != constants.RESPONSE_CODES.SUCCESS) {
+      if (res.code !== constants.RESPONSE_CODES.SUCCESS) {
         http.trigger(res.code);
         throw res;
       }

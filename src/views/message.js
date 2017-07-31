@@ -10,6 +10,7 @@ import {
   TextInput,
   FlatList,
   StyleSheet,
+  Button,
 } from 'react-native'
 
 import MdChildCare from 'react-icons/lib/md/child-care'
@@ -29,9 +30,26 @@ import Message from '../services/message'
 
 class MessagePage extends React.Component {
 
-  static navigationOptions = {
+  static navigationOptions = ({navigation}) => ({
     title: 'itech+聊天室',
-  };
+
+    headerLeft: (
+      <Button
+        title="我的"
+        onPress={() => {
+          navigation.navigate('me');
+        }}
+      />
+    ),
+    headerRight: (
+      <Button
+        title="所有用户"
+        onPress={() => {
+          navigation.navigate('users');
+        }}
+      />
+    ),
+  });
 
   constructor(props){
     super(props);
@@ -47,7 +65,7 @@ class MessagePage extends React.Component {
   componentDidMount(){
     // 获取消息
     Message.fetchMessages().then(msgs => {
-      // console.log(msgs);
+      console.log(msgs);
       this.setState({
         msgs: msgs || [],
       }, this.scrollMsgContaner);
@@ -78,7 +96,6 @@ class MessagePage extends React.Component {
   }
 
   handleSendMsg(e) {
-    if(e.key !== 'Enter') return;
 
     console.log(this.state.search);
     Message.sendMessage({
@@ -86,12 +103,11 @@ class MessagePage extends React.Component {
       senderId: this.currentUserId, //消息发送人ID
     }).then(fMsg => {
       // this.state.msgs.push();
-      this.setState({
-        search: '',
-      });
+      this.setState({ search: '' });
     }).catch(e => {
       console.error(e);
       // todo
+      alert('信息发送失败');
     });
   }
 
@@ -99,7 +115,7 @@ class MessagePage extends React.Component {
 
   render() {
     return (
-      <View style={styles.messageContainer} className="display-flex message-container">
+      <View style={styles.messageContainer}>
 
         {this.renderMessages2()}
 
@@ -108,45 +124,11 @@ class MessagePage extends React.Component {
     );
   }
 
-  renderMessages() {
-    const {msgs} = this.state;
-
-    if(_.isEmpty(msgs)){
-      return <View className="flex-1"><Text>暂无聊天内容</Text></View>;
-    }
-
-    return (
-      <View className="msg-container flex-1 pt-40 pb-10" ref={ref => {
-        this.msgContainer = ref;
-      }}>
-        {msgs.map((msg, index) => {
-          const {url, senderId, content, senderName, createTime} = msg;
-
-          return (
-            <View key={index} className="display-flex msg-item mb-20">
-              {/* 头像 昵称 内容 */}
-              <Image source={{uri: url}}  style={{width: 40, height: 40, borderRadius: 20}}/>
-              <View className="ml-10 flex-1">
-                <View className="display-flex flex-justify-content-between">
-                  <Text>{senderName}</Text>
-                  <Text className="color-text-slight fz-20">{moment(createTime).format('MM-DD hh:MM:ss')}</Text>
-                </View>
-                <View className="item-content mt-15">
-                  <Text>{content}</Text>
-                </View>
-              </View>
-            </View>
-          );
-        })}
-      </View>
-    );
-  }
-
   renderMessages2(){
     const {msgs} = this.state;
 
     if(_.isEmpty(msgs)){
-      return <View className="flex-1"><Text>暂无聊天内容</Text></View>;
+      return <View  style={styles.msgWrap}><Text>暂无聊天内容</Text></View>;
     }
 
     return (
@@ -176,7 +158,7 @@ class MessagePage extends React.Component {
             <Text className="color-text-slight fz-20">{moment(createTime).format('MM-DD hh:MM:ss')}</Text>
           </View>
           <View style={styles.itemItemContent} className="item-content mt-15">
-            <Text style={styles.itemItemContentTxt}>{content}{content}{content}</Text>
+            <Text style={styles.itemItemContentTxt}>{content}</Text>
           </View>
         </View>
       </View>
@@ -185,24 +167,28 @@ class MessagePage extends React.Component {
 
   renderMessageOpt() {
     return (
-      <View>
+      <View style={styles.msgOpt}>
         <TextInput
-          type="text"
-          className="display-block"
-          onKeyPress={this.handleSendMsg}
           value={this.state.search || ''}
-          onChangeText={e => {
-            this.setState({search: e.target.value});
-          }}/>
+          onChangeText={value => {
+            this.setState({search: value});
+          }}
+          onSubmitEditing={this.handleSendMsg}
+        />
       </View>
     );
   }
 }
 
 const styles = {
+  messageContainer: {
+    flex: 1,
+  },
   msgWrap: {
     // paddingTop: 20,
     // paddingBottom: 10,
+    flex: 1,
+    paddingBottom: 12,
   },
   msgItem: {
     flexDirection: 'row',
@@ -240,6 +226,13 @@ const styles = {
   },
   itemItemContentTxt: {
     // lineHeight: 0,
+  },
+
+  msgOpt: {
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#3cc8b4',
+    // height: 100,
   }
 };
 

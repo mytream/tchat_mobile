@@ -1,9 +1,7 @@
 /**
  * Created by mytream on 16/8/17.
  */
-// import io from 'socket.io-client/dist/socket.io'
-import SocketIO from 'react-native-socketio'
-import Cookie from 'js-cookie'
+import io from 'socket.io-client/socket.io'
 import constants from './constants'
 import cache from './cache'
 
@@ -20,7 +18,21 @@ const MSG_TYPE = {
   USER_STATE: 'user_state', //用户的状态
 };
 
+function compatibilitySetting() {
+  // workaround for React Native issues with some libraries (e.g. cuid, socket-io)
+  // if (global.navigator && global.navigator.product === 'ReactNative') {
+  //   global.navigator.mimeTypes = '';
+  //   try {
+  //     global.navigator.userAgent = 'ReactNative';
+  //   }
+  //   catch (e) {
+  //     console.log('Tried to fake useragent, but failed. This is normal on some devices, you may ignore this error: ' + e.message);
+  //   }
+  // }
 
+  global.navigator.userAgent = 'react-native';
+}
+compatibilitySetting();
 
 const events = {};
 
@@ -28,21 +40,20 @@ const events = {};
 service.open = ()=>{
   if(socket) return;
 
-  // socket = io.connect(API_ORIGIN);
-  socket = new SocketIO(API_ORIGIN, {
-    path: 'socket.io'
-  });
-  socket.connect();
-
-  // alert(API_ORIGIN);
+  socket = io.connect(API_ORIGIN);
 
   // An event to be fired on connection to socket
   socket.on('connect', () => {
     console.log('Wahey -> connected!');
   });
 
+  socket.on('connect_error', (error) => {
+    // console.log('socket conn err');
+    console.log('socket conn err', error);
+  });
+
   socket.on(MSG_TYPE.FIRST_CONNECT,function (data) {
-    alert('first-connect: ' + data);
+    console.log('first-connect: ' + data);
 
     // 获得用户ID
     cache.get(constants.X_USER_ID).then(userId => {
@@ -54,19 +65,19 @@ service.open = ()=>{
   });
 
   socket.on(MSG_TYPE.GREETING, function (userInfo) {
-    alert('validate-success: ', userInfo);
+    console.log('validate-success: ', userInfo);
 
     cache.set(constants.X_USER_ID, userInfo.userId).then(()=>{});
     cache.set(constants.CACHE_KEYS.CURRENT_USER, userInfo).then(()=>{});
   });
 
   socket.on(MSG_TYPE.ROOT_MSG,function (data) {
-    alert('system msg: ', data);
+    console.log('system msg: ', data);
   });
 
   socket.on(MSG_TYPE.ON_GOING,function (data) {
-    alert('on going msg: \n');
-    alert(data);
+    console.log('on going msg: \n');
+    console.log(data);
 
     // 用KEY作为区分
     const key = data.code;
@@ -80,7 +91,7 @@ service.open = ()=>{
 
 
   socket.on('disconnect',(err)=>{
-    alert('disconnect ... ');
+    console.log('disconnect ... ');
     console.error(err);
 
     // todo: 调用接口通知下线
