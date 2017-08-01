@@ -1,7 +1,8 @@
 /**
  * Created by mytream on 16/8/17.
  */
-import io from 'socket.io-client/socket.io'
+// import io from 'socket.io-client/socket.io'
+import SocketIo from '../components/SocketIo'
 import constants from './constants'
 import cache from './cache'
 
@@ -40,7 +41,9 @@ const events = {};
 service.open = ()=>{
   if(socket) return;
 
-  socket = io.connect(API_ORIGIN);
+  socket = new SocketIo(API_ORIGIN);
+
+  // SocketIo.connect(API_ORIGIN);
 
   // An event to be fired on connection to socket
   socket.on('connect', () => {

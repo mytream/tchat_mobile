@@ -16,6 +16,8 @@ import {
 import MdChildCare from 'react-icons/lib/md/child-care'
 import TiUser from 'react-icons/lib/ti/user'
 
+import Hello from '../components/Hello'
+
 import _ from 'lodash'
 import moment from 'moment'
 
@@ -26,6 +28,9 @@ import SOCKET from '../common/socketio'
 
 import Message from '../services/message'
 // import Text from "antd-mobile/lib/text/index.web.d";
+
+
+SOCKET.open();
 
 
 class MessagePage extends React.Component {
@@ -116,6 +121,14 @@ class MessagePage extends React.Component {
   render() {
     return (
       <View style={styles.messageContainer}>
+        <Button
+          onPress={() => {
+            Hello.show('清明时节雨纷纷!', Hello.SHORT);
+            console.log('Hello.SHORT', Hello.SHORT);
+          }}
+          title="Hello"
+        />
+
 
         {this.renderMessages2()}
 
