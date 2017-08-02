@@ -36,9 +36,12 @@ class Socket {
   }
 
   _handleEvent (event) {
+
+    console.log('_handleEvent', event);
+
     if (this.handlers.hasOwnProperty(event.name)) {
       this.handlers[event.name](
-        (event.hasOwnProperty('items')) ? event.items : null
+        (event.hasOwnProperty('items') && event.items.length) ? event.items[0] : null
       );
     }
     if (this.defaultHandlers.hasOwnProperty(event.name)) {
@@ -54,9 +57,9 @@ class Socket {
 
   on (event, handler) {
     this.handlers[event] = handler;
-    if (Platform.OS === 'android') {
-      this.sockets.on(event);
-    }
+    // if (Platform.OS === 'android') {
+    // }
+    this.sockets.on(event);
   }
 
   onAny (handler) {

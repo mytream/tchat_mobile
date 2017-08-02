@@ -11,7 +11,10 @@ import {
   FlatList,
   StyleSheet,
   Button,
+  ScrollView,
 } from 'react-native'
+
+import InvertibleScrollView from 'react-native-invertible-scroll-view'
 
 import MdChildCare from 'react-icons/lib/md/child-care'
 import TiUser from 'react-icons/lib/ti/user'
@@ -64,16 +67,16 @@ class MessagePage extends React.Component {
     };
 
     this.handleSendMsg = this.handleSendMsg.bind(this);
-    this.scrollMsgContaner = this.scrollMsgContaner.bind(this);
+    this.scrollMsgContainer = this.scrollMsgContainer.bind(this);
   }
 
   componentDidMount(){
     // 获取消息
     Message.fetchMessages().then(msgs => {
-      console.log(msgs);
+      // console.log(msgs);
       this.setState({
-        msgs: msgs || [],
-      }, this.scrollMsgContaner);
+        msgs: (msgs || []).reverse(),
+      }, this.scrollMsgContainer);
     }).catch(e => {
       console.error(e);
       // todo
@@ -89,15 +92,16 @@ class MessagePage extends React.Component {
     // 监听消息
     SOCKET.onOnce(`${constants.MSG_CODE.MESSAGE}-msgs`, (newMsg) => {
       const { msgs } = this.state;
-      msgs.push(newMsg);
-      this.setState({ msgs }, this.scrollMsgContaner);
+      // msgs.push(newMsg);
+      msgs.unshift(newMsg);
+      this.setState({ msgs }, this.scrollMsgContainer);
     });
   }
 
-  scrollMsgContaner() {
-
-    // todo
-    // this.msgContainer.scrollTop = 20000;
+  scrollMsgContainer() {
+    // this.msgScrollView.scrollToEnd({
+    //   animated: false,
+    // });
   }
 
   handleSendMsg(e) {
@@ -116,15 +120,14 @@ class MessagePage extends React.Component {
     });
   }
 
-
-
   render() {
     return (
       <View style={styles.messageContainer}>
         <Button
           onPress={() => {
-            Hello.show('清明时节雨纷纷!', Hello.SHORT);
-            console.log('Hello.SHORT', Hello.SHORT);
+            // Hello.show('清明时节雨纷纷!', Hello.SHORT);
+            // console.log('Hello.SHORT', Hello.SHORT);
+            this.scrollMsgContainer();
           }}
           title="Hello"
         />
@@ -146,12 +149,25 @@ class MessagePage extends React.Component {
 
     return (
       <View style={styles.msgWrap}>
-        <FlatList
-          data={msgs}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderListItem}
-        />
+        {/*<FlatList*/}
+          {/*data={msgs}*/}
+          {/*extraData={this.state}*/}
+          {/*keyExtractor={this._keyExtractor}*/}
+          {/*renderItem={this._renderListItem}*/}
+          {/*inverted={true}*/}
+        {/*/>*/}
+
+        <InvertibleScrollView
+          inverted
+          contentContainerStyle={styles.msgScroll}
+        >
+          {msgs.map((msg, index) => {
+            return this._renderListItem({
+              item: msg,
+              index,
+            });
+          })}
+        </InvertibleScrollView>
       </View>
     );
   }
@@ -162,7 +178,7 @@ class MessagePage extends React.Component {
     const {url, senderId, content, senderName, createTime} = msg;
 
     return (
-      <View style={styles.msgItem} >
+      <View key={index} style={styles.msgItem} >
         {/* 头像 昵称 内容 */}
         <Image source={{uri: url}}   style={styles.msgItemImg}/>
         <View style={styles.msgItemInfo}>
@@ -202,6 +218,11 @@ const styles = {
     // paddingBottom: 10,
     flex: 1,
     paddingBottom: 12,
+  },
+  msgScroll: {
+    // flex:1,
+    // flexDirection: 'column-reverse',
+    // justifyContent: 'flex-end',
   },
   msgItem: {
     flexDirection: 'row',

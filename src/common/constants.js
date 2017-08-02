@@ -17,9 +17,10 @@ constants.X_USER_ID = "x-user-id";
 
 constants.COOKIE_DOMAIN = 'localhost';
 
-constants.API_ORIGIN = 'http://192.168.31.240:8080';
 // 需要设置成远程的IP，不能使用127.0.0.1或者localhost
 // constants.API_ORIGIN = 'http://127.0.0.1:8080';
+// constants.API_ORIGIN = 'http://192.168.31.240:8080';
+constants.API_ORIGIN = 'http://192.168.199.135:8080';
 
 // 页面名称
 constants.PAGES = {

@@ -42,6 +42,7 @@ service.open = ()=>{
   if(socket) return;
 
   socket = new SocketIo(API_ORIGIN);
+  socket.connect();
 
   // SocketIo.connect(API_ORIGIN);
 
@@ -60,7 +61,7 @@ service.open = ()=>{
 
     // 获得用户ID
     cache.get(constants.X_USER_ID).then(userId => {
-      socket.emit(MSG_TYPE.FIRST_CONNECT, userId);
+      socket.emit(MSG_TYPE.FIRST_CONNECT, String(userId));
     }, err => {
       console.error(err);
       socket.emit(MSG_TYPE.FIRST_CONNECT, null);
